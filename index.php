@@ -55,12 +55,27 @@ body {
       </table>
     </form>
   <?php 
+
+
   //Check if the ID exists
 if(isset($_POST['id'])){
 	$profile_id = $_POST['id'];
 	//GET IMAGE FROM FB GRAPH | https://graph.facebook.com/jamesjaraweb/picture
-$original_photo = "https://graph.facebook.com/$profile_id/picture";
-$newurl= "http://www.tineye.com/search?url=".$original_photo;
+	
+//ESTA FUNCION GASTA RECURSOS, ASI QUE SERIA MEJOR PRIMERO INTENTAR DE LA FORMA NORMAL OSEA ENVIANDO DIRECTAMENTE LA URL...
+//Y SI ESA DA ERROR, ENTONCES PROBAR CON CURL...
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, "http://graph.facebook.com/$profile_id/picture?type=large");
+curl_setopt($ch, CURLOPT_HEADER, false);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_NOBODY, true);
+curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+curl_exec($ch);
+$url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+curl_close($ch);
+
+
+$newurl= "http://www.tineye.com/search?url=".$url;
 } else 
 {
 	echo "ID MUST BE ESPECIFIED";
