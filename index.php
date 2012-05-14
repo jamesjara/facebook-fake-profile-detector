@@ -1,4 +1,19 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?php 
+	include('fakeFBdetector.php');
+
+	$detect = new FakeFBDetector();
+	$result = null;
+	//Check if the ID exists
+	$profile_id = $_POST['id'];
+	if(isset( $profile_id )){		
+		if( $detect->isFakeFacebook( $profile_id  ) ){ 
+			$result = "fb falso";
+		} else {
+			$result = "fb real";
+		}
+	} 
+
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -54,65 +69,14 @@ body {
         </tr>
       </table>
     </form>
-  <?php 
-
-
-  //Check if the ID exists
-if(isset($_POST['id'])){
-	$profile_id = $_POST['id'];
-	//GET IMAGE FROM FB GRAPH | https://graph.facebook.com/jamesjaraweb/picture
-	
-//ESTA FUNCION GASTA RECURSOS, ASI QUE SERIA MEJOR PRIMERO INTENTAR DE LA FORMA NORMAL OSEA ENVIANDO DIRECTAMENTE LA URL...
-//Y SI ESA DA ERROR, ENTONCES PROBAR CON CURL...
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, "http://graph.facebook.com/$profile_id/picture?type=large");
-curl_setopt($ch, CURLOPT_HEADER, false);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_NOBODY, true);
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-curl_exec($ch);
-$url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-curl_close($ch);
-
-
-$newurl= "http://www.tineye.com/search?url=".$url;
-} else 
-{
-	echo "ID MUST BE ESPECIFIED";
-} 
-
-
-  ?> </blockquote>  
+  </blockquote>  
   <div align="center">
     <table width="203" border="0" bgcolor="#666666">
       <tr>
         <th scope="col"><span class="Estilo3">The Result is:</span></th> 
       </tr>
       <tr>
-        <td><div align="center"><?php
-//loading url
-if(isset($newurl))
-{
-$página_inicio = file_get_contents($newurl);
-   $cadena=$página_inicio;
-   // the url is scaning
-   if (strpos($cadena, "0 results") !== false) { 
-	//if result is like 0 show "Real profile", else if result is more big than 0 show "Fake profile"
-	echo "Real Profile";
-}
-else
-{
-echo "Fake Profile";
-}
-}
-else
-{
-echo "Please Enter a Facebook profile ID ";
-}
-//This Software gets content about Web search Title, Mae James we did it ;)
-// Fake facebook detector
-?>
-</div></td>
+        <td><div align="center"><?php if($result!=null) echo $result;  ?></div></td>
       </tr>
     </table>
     <p>&nbsp;</p>
